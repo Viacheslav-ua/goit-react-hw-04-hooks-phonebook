@@ -1,98 +1,88 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import Modal from "../Modal";
 import { v4 as uuidv4 } from "uuid";
 import S from "./ContactForm.module.css";
-// import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-
-interface StateType {
-  name?: string;
-  number?: string;
-  showModal: boolean;
-}
 
 interface PropsType {
   formSubmit: any;
   findName: any;
 }
 
-class ContactForm extends Component<PropsType> {
-  state: StateType = {
-    name: "",
-    number: "",
-    showModal: false,
-  };
+const ContactForm: React.FC<PropsType> = ({ formSubmit, findName }) => {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  handleAddInput = (i: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const b = new RegExp(i);
-    if (b.test(e.currentTarget.value)) {
-      this.setState({ [e.currentTarget.name]: e.currentTarget.value });
-    }
-  };
+  const handleAddInput =
+    (i: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const b = new RegExp(i);
+      if (b.test(e.currentTarget.value)) {
+        if (e.currentTarget.name === "name") setName(e.currentTarget.value);
+        if (e.currentTarget.name === "number") setNumber(e.currentTarget.value);
+      }
+    };
 
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (this.props.findName(this.state.name)) {
-      this.toggleModal();
+    if (findName(name)) {
+      toggleModal();
       return;
     }
-    this.props.formSubmit({ id: uuidv4(), ...this.state });
-    this.reset();
+    formSubmit({ id: uuidv4(), name: name, number: number });
+    reset();
   };
 
-  reset = () => {
-    this.setState({ name: "", number: "" });
+  const reset = () => {
+    setName("");
+    setNumber("");
   };
 
-  toggleModal = (): void => {
-    this.setState(({ showModal }: StateType) => ({
-      showModal: !showModal,
-    }));
+  const toggleModal = (): void => {
+    setShowModal((state) => !state);
   };
 
-  render() {
-    return (
-      <>
-        {this.state.showModal && (
-          <Modal onClose={this.toggleModal}>
-            <Alert severity="warning" onClose={this.toggleModal}>
-              <AlertTitle>Warning</AlertTitle>
-              {this.state.name} is already in contacts
-            </Alert>
-          </Modal>
-        )}
-        <form className={S.contactsForm} onSubmit={this.handleSubmit}>
-          <TextField
-            label="Name"
-            variant="standard"
-            id="component-simple"
-            name="name"
-            value={this.state.name}
-            onChange={this.handleAddInput("^$|^[$a-zA-Zа-яА-Я -']*$")}
-            title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-            required
-          />
-          <TextField
-            label="Phone number"
-            variant="standard"
-            id="component-simple"
-            type="tel"
-            name="number"
-            value={this.state.number}
-            onChange={this.handleAddInput("^$|^\\+|^\\d[\\d\\s-.]*$")}
-            title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
-            required
-          />
+  return (
+    <>
+      {showModal && (
+        <Modal onClose={toggleModal}>
+          <Alert severity="warning" onClose={toggleModal}>
+            <AlertTitle>Warning</AlertTitle>
+            {name} is already in contacts
+          </Alert>
+        </Modal>
+      )}
+      <form className={S.contactsForm} onSubmit={handleSubmit}>
+        <TextField
+          label="Name"
+          variant="standard"
+          id="component-simple"
+          name="name"
+          value={name}
+          onChange={handleAddInput("^$|^[$a-zA-Zа-яА-Я -']*$")}
+          title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+          required
+        />
+        <TextField
+          label="Phone number"
+          variant="standard"
+          id="component-simple"
+          type="tel"
+          name="number"
+          value={number}
+          onChange={handleAddInput("^$|^\\+|^\\d[\\d\\s-.]*$")}
+          title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
+          required
+        />
 
-          <Button type="submit" className={S.btn} variant="contained">
-            Add contact
-          </Button>
-        </form>
-      </>
-    );
-  }
-}
+        <Button type="submit" className={S.btn} variant="contained">
+          Add contact
+        </Button>
+      </form>
+    </>
+  );
+};
 export default ContactForm;

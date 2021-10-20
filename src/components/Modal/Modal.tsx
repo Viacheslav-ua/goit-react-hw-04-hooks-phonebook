@@ -7,6 +7,7 @@ import S from "./Modal.module.css";
 const modalRoot: any = document.querySelector("#modal-root");
 interface PropsType {
   onClose: any;
+  children: React.ReactChild | React.ReactNode;
 }
 const Modal: React.FC<PropsType> = ({ onClose, children }) => {
   useEffect(() => {

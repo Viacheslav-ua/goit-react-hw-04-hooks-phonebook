@@ -13,9 +13,9 @@ interface PropsType {
 }
 
 const ContactForm: React.FC<PropsType> = ({ formSubmit, findName }) => {
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [name, setName] = useState<string>("");
+  const [number, setNumber] = useState<string>("");
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const handleAddInput =
     (i: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
